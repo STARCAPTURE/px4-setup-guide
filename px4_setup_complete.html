@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubuntu 24.04 PX4-ROV开发环境配置完整指南 v2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 300px;
+            background: #1a252f;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 20px;
+            color: #ecf0f1;
+            padding: 0 20px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin: 3px 0;
+        }
+
+        .nav-menu a {
+            display: block;
+            padding: 8px 20px;
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-size: 13px;
+        }
+
+        .nav-menu a:hover {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-left-color: #3498db;
+        }
+
+        .nav-menu a.active {
+            background: #3498db;
+            color: white;
+            border-left-color: #2980b9;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 40px;
+            background: white;
+        }
+
+        .chapter {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .chapter.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chapter h1 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .chapter h2 {
+            font-size: 20px;
+            margin: 25px 0 15px;
+            color: #34495e;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .chapter h3 {
+            font-size: 16px;
+            margin: 20px 0 10px;
+            color: #34495e;
+        }
+
+        .chapter p {
+            margin-bottom: 12px;
+            font-size: 15px;
+            text-align: justify;
+        }
+
+        .chapter ul, .chapter ol {
+            margin: 12px 0;
+            padding-left: 25px;
+        }
+
+        .chapter li {
+            margin: 6px 0;
+            font-size: 15px;
+        }
+
+        /* 代码块样式 */
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow-x: auto;
+            position: relative;
+            border-left: 4px solid #4299e1;
+        }
+
+        .code-block pre {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #3182ce;
+        }
+
+        .copy-success {
+            background: #48bb78 !important;
+        }
+
+        .content-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 12px 0;
+        }
+
+        .note {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 12px 0;
+        }
+
+        .tip {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 12px 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+
+            .chapter h1 {
+                font-size: 24px;
+            }
+
+            .chapter h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <h2>PX4-ROV开发环境配置完整指南 v2.0</h2>
+            <ul class="nav-menu">
+                <li><a href="#" data-chapter="preparation" class="active">一、准备工作</a></li>
+                <li><a href="#" data-chapter="vmware-install">二、VMware安装</a></li>
+                <li><a href="#" data-chapter="ubuntu-download">三、Ubuntu下载</a></li>
+                <li><a href="#" data-chapter="vm-setup">四、虚拟机创建</a></li>
+                <li><a href="#" data-chapter="network-config">五、网络配置</a></li>
+                <li><a href="#" data-chapter="proxy-setup">六、代理设置</a></li>
+                <li><a href="#" data-chapter="apt-config">七、APT源配置</a></li>
+                <li><a href="#" data-chapter="basic-tools">八、基础工具安装</a></li>
+                <li><a href="#" data-chapter="workspace-setup">九、工作空间设置</a></li>
+                <li><a href="#" data-chapter="px4-compile">十、PX4-ROV编译与仿真</a></li>
+                <li><a href="#" data-chapter="gazebo">十一、Gazebo-ROV仿真环境</a></li>
+                <li><a href="#" data-chapter="dev-tools">十二、开发工具</a></li>
+                <li><a href="#" data-chapter="shared-clipboard">十三、共享剪贴板</a></li>
+                <li><a href="#" data-chapter="verification">十四、环境验证</a></li>
+                <li><a href="#" data-chapter="troubleshooting">十五、常见问题</a></li>
+                <li><a href="#" data-chapter="quick-reference">十六、快速参考</a></li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 一、准备工作 -->
+            <div id="preparation" class="chapter active">
+                <h1>一、准备工作清单</h1>
+
+                <div class="tip">
+                    <strong>版本说明：</strong>本指南基于 Ubuntu 24.04.4 LTS 和 Gazebo Classic 11，专门针对PX4-ROV（水下机器人）开发环境配置，与PX4 v1.15+版本完全兼容。
+                </div>
+
+                <div class="content-section">
+                    <h2>硬件要求</h2>
+                    <ul>
+                        <li><strong>内存：</strong>至少 8GB RAM（推荐 16GB）</li>
+                        <li><strong>存储：</strong>至少 100GB 可用空间</li>
+                        <li><strong>CPU：</strong>支持虚拟化技术（Intel VT-x / AMD-V）</li>
+                        <li><strong>显卡：</strong>支持 OpenGL 3.3+（用于Gazebo仿真）</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h2>软件准备清单</h2>
+                    <ul>
+                        <li>VMware Workstation Pro 26H1</li>
+                        <li>Ubuntu 24.04.4 Desktop AMD64 ISO</li>
+                        <li>网络代理信息（如有）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 二、VMware安装 -->
+            <div id="vmware-install" class="chapter">
+                <h1>二、VMware Workstation安装</h1>
+
+                <div class="content-section">
+                    <h2>2.1 下载安装包</h2>
+                    <p>访问博通官方下载页面：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>https://support.broadcom.com/group/ecx/productfiles?subFamily=VMware%20Workstation%20Pro&displayGroup=VMware%20Workstation%20Pro%2026H1%20for%20Windows&release=26H1&os=&servicePk=543221&language=EN&freeDownloads=true</pre>
+                    </div>
+                    <div class="warning">
+                        <strong>注意：</strong>需要注册博通账号才能下载，注册信息可以填写任意有效信息。
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>2.2 安装步骤</h2>
+                    <ul>
+                        <li>下载 <code>VMware-workstation-full-26H1-x86_64.exe</code></li>
+                        <li>以管理员身份运行安装程序</li>
+                        <li>按照向导完成安装（选择典型安装即可）</li>
+                        <li>安装完成后重启计算机</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 三、Ubuntu下载 -->
+            <div id="ubuntu-download" class="chapter">
+                <h1>三、Ubuntu 24.04.4下载</h1>
+
+                <div class="content-section">
+                    <h2>3.1 官方下载</h2>
+                    <p>使用清华大学镜像站下载（推荐，速度快）：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/24.04/</pre>
+                    </div>
+                    <p>下载文件：<code>ubuntu-24.04.4-desktop-amd64.iso</code></p>
+                </div>
+
+                <div class="content-section">
+                    <h2>3.2 文件验证</h2>
+                    <p>下载完成后验证文件完整性：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 文件大小应约为 5.1GB
+# SHA256: 可以从清华镜像站的 SHA256SUMS 文件查看</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 四、虚拟机创建 -->
+            <div id="vm-setup" class="chapter">
+                <h1>四、虚拟机创建</h1>
+
+                <div class="content-section">
+                    <h2>4.1 创建步骤</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>1. 打开 VMware → 创建新虚拟机
+2. 选择"典型(推荐)"
+3. 选择"安装程序光盘映像文件" → 选择 Ubuntu 24.04.4 ISO
+4. 虚拟机名称: Ubuntu-24.04-PX4
+5. 位置: 选择有足够空间的磁盘
+6. 磁盘容量: 100GB (建议值)
+7. 内存: 8192MB (8GB)
+8. 处理器: 4核心
+9. 网络: NAT模式
+10. 完成创建 → 启动虚拟机</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>4.2 参考视频</h2>
+                    <p>详细的虚拟机创建教程：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>https://www.bilibili.com/video/BV17i421r7vA/</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>4.3 Ubuntu安装要点</h2>
+                    <ul>
+                        <li>键盘布局：English (US)</li>
+                        <li>安装类型：Erase disk and install Ubuntu</li>
+                        <li>时区：Asia/Shanghai</li>
+                        <li>用户名：建议英文（如 px4user）</li>
+                        <li>密码：设置简单易记的密码</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 五、网络配置 -->
+            <div id="network-config" class="chapter">
+                <h1>五、网络连接确认</h1>
+
+                <div class="content-section">
+                    <h2>5.1 网络模式确认</h2>
+                    <p>确保虚拟机网络设置为NAT模式：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>1. 虚拟机 → 设置 → 网络适配器
+2. 确认选择：NAT模式
+3. 勾选：连接 → 连接</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>5.2 网络连通性测试</h2>
+                    <p>在Ubuntu终端中测试网络连接：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 测试网络连接
+ping -c 4 baidu.com
+
+# 测试DNS解析
+nslookup github.com
+
+# 查看IP地址
+ip addr show</pre>
+                    </div>
+                    <div class="warning">
+                        <strong>问题解决：</strong>如果网络不通，请检查VMware NAT服务是否启动，或重启网络服务：<code>sudo systemctl restart NetworkManager</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 六、代理设置 -->
+            <div id="proxy-setup" class="chapter">
+                <h1>六、网络代理配置</h1>
+
+                <div class="note">
+                    <strong>适用场景：</strong>如果你的网络环境需要通过代理访问外网，请配置以下代理设置。
+                </div>
+
+                <div class="content-section">
+                    <h2>6.1 永久代理配置（方式一：/etc/profile）</h2>
+                    <p>编辑全局配置文件：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo nano /etc/profile</pre>
+                    </div>
+                    <p>在文件末尾添加（替换为你的代理地址）：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 永久代理配置（HTTP/HTTPS/SOCKS5 三选一或按需配置）
+export http_proxy=http://192.168.1.10:8080
+export https_proxy=http://192.168.1.10:8080
+export all_proxy=socks5://192.168.1.10:1080
+export no_proxy="localhost,127.0.0.1,::1,192.168.0.0/16"</pre>
+                    </div>
+                    <p>保存并生效：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>source /etc/profile</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>6.2 永久代理配置（方式二：/etc/environment）</h2>
+                    <p>编辑系统环境文件：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo nano /etc/environment</pre>
+                    </div>
+                    <p>添加代理信息（格式不同，无需export）：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>http_proxy="http://192.168.1.10:8080"
+https_proxy="http://192.168.1.10:8080"
+all_proxy="socks5://192.168.1.10:1080"
+no_proxy="localhost,127.0.0.1,::1,192.168.0.0/16"</pre>
+                    </div>
+                    <div class="tip">
+                        <strong>提示：</strong>方式二需要重启系统或重新登录才能生效，但更稳定。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 七、APT源配置 -->
+            <div id="apt-config" class="chapter">
+                <h1>七、APT源配置（阿里云镜像）</h1>
+
+                <div class="content-section">
+                    <h2>7.1 编辑源文件</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo nano /etc/apt/sources.list.d/ubuntu.sources</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>7.2 替换为阿里云镜像源</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 阿里云 Ubuntu 24.04 镜像源
+Types: deb
+URIs: https://mirrors.aliyun.com/ubuntu
+Suites: noble noble-updates noble-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+# 阿里云 Ubuntu 24.04 安全更新源
+Types: deb
+URIs: https://mirrors.aliyun.com/ubuntu
+Suites: noble-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>7.3 更新软件源</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo apt update</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>7.4 安装基础编译工具</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo apt install -y git zip cmake build-essential curl</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 八、基础工具安装 -->
+            <div id="basic-tools" class="chapter">
+                <h1>八、基础开发工具安装</h1>
+
+                <div class="content-section">
+                    <h2>8.1 更新系统</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo apt update
+sudo apt upgrade -y</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>8.2 安装开发工具</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo apt install -y vim wget python3 python3-pip python3-venv python3-dev</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>8.3 安装PX4编译工具链</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># ARM交叉编译器
+sudo apt install -y gcc-arm-none-eabi gdb-arm-none-eabi
+
+# 其他编译工具
+sudo apt install -y ninja-build clang lld
+
+# Python依赖
+pip3 install --break-system-packages empy==3.3.4 numpy toml jinja2 pyyaml</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 九、工作空间设置 -->
+            <div id="workspace-setup" class="chapter">
+                <h1>九、工作空间设置</h1>
+
+                <div class="content-section">
+                    <h2>9.1 创建工作目录</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 在主目录下创建专门的无人机工作空间
+mkdir -p ~/uav_workspace
+cd ~/uav_workspace</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>9.2 克隆项目代码</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 克隆PX4项目（使用Gitee镜像，速度快）
+git clone --recursive https://gitee.com/hxlanu/PX4-Autopilot.git
+
+# 可选：克隆ArduPilot项目
+git clone --recursive https://gitee.com/mirrors/ardupilot.git</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>9.3 更新子模块</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>cd ~/uav_workspace/PX4-Autopilot
+git submodule sync --recursive
+git submodule update --init --recursive</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 十一、Gazebo-ROV仿真环境 -->
+            <div id="gazebo" class="chapter">
+                <h1>十一、Gazebo-ROV仿真环境</h1>
+
+                <div class="content-section">
+                    <h2>11.1 安装 Gazebo Classic</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo apt install -y gazebo libgazebo-dev</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>11.2 安装 Gazebo 依赖</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo apt install -y libopencv-dev protobuf-compiler libprotobuf-dev</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>11.3 安装 GStreamer (用于水下摄像头仿真)</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo apt install -y gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>11.4 安装ROV专用插件</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 安装水下仿真相关插件
+sudo apt install -y libgazebo11-dev libignition-math6-dev
+
+# 安装ROS Gazebo插件（支持水下传感器）
+sudo apt install -y ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 十、PX4-ROV编译与仿真 -->
+            <div id="px4-compile" class="chapter">
+                <h1>十、PX4-ROV编译与仿真</h1>
+
+                <div class="content-section">
+                    <h2>10.1 编译PX4-ROV固件</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>cd ~/uav_workspace/PX4-Autopilot
+
+# 编译支持ROV的SITL版本
+make px4_sitl_default</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>10.2 启动ROV仿真环境</h2>
+                    <p>Hippocampus水下机器人仿真：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>make px4_sitl gazebo-classic_uuv_hippocampus</pre>
+                    </div>
+                    <p>通用UUV（无人水下航行器）仿真：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>make px4_sitl gazebo-classic_uuv_helica</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>10.3 ROV仿真控制命令</h2>
+                    <p>在 <code>pxh&gt;</code> 提示符下使用以下ROV专用命令：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>help                    # 查看所有命令
+commander arm          # 解锁ROV
+commander disarm       # 锁定ROV
+commander takeoff      # 下潜到默认深度
+commander land         # 上浮到水面
+commander forward 2    # 前进2米
+commander backward 1   # 后退1米
+commander left 1       # 左移1米
+commander right 1      # 右移1米
+commander yaw_left 30  # 左转30度
+commander yaw_right 30 # 右转30度
+commander arm force    # 强制解锁
+exit                   # 退出仿真</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>10.4 ROV仿真参数调整</h2>
+                    <p>修改ROV仿真参数：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 设置水下环境参数
+param set SIM_WATER_DENSITY 1025  # 海水密度 kg/m³
+param set SIM_WATER_VISCO 0.001   # 水的粘度
+
+# 设置ROV动力学参数
+param set UUV_THRUST_SCALE 1.0    # 推力比例
+param set UUV_MASS 10.0           # ROV质量 kg
+
+# 保存参数
+param save</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 七、开发工具安装 -->
+            <div id="dev-tools" class="chapter">
+                <h1>十二、开发工具安装</h1>
+
+                <div class="content-section">
+                    <h2>12.1 安装 VSCode</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo snap install --classic code
+cd ~/uav_workspace/PX4-Autopilot
+code .</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>12.2 安装 QGroundControl (地面站)</h2>
+                    <h3>12.2.1 准备工作</h3>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 1. 将当前用户添加到 dialout 组（串口访问权限）
+sudo usermod -aG dialout "$(id -un)"
+
+# 2. 禁用 ModemManager（防止其占用串口）
+sudo systemctl mask --now ModemManager.service
+
+# 3. 安装 GStreamer（视频流支持）
+sudo apt install -y gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-gl
+sudo apt install -y python3-gi python3-gst-1.0
+
+# 4. 安装 FUSE 和 X11 依赖（AppImage 运行所需）
+sudo apt install -y libfuse2 libxcb-xinerama0 libxkbcommon-x11-0 libxcb-cursor-dev</pre>
+                    </div>
+
+                    <div class="warning">
+                        <strong>重要：</strong> 执行完第 1 步后，需要注销并重新登录才能使权限生效。
+                    </div>
+
+                    <h3>12.2.2 下载并运行 QGroundControl</h3>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 创建工作目录并下载
+mkdir -p ~/uav_workspace/tools
+cd ~/uav_workspace/tools
+wget https://d176tv9ibo4jno.cloudfront.net/latest/QGroundControl-x86_64.AppImage
+
+# 赋予执行权限
+chmod +x QGroundControl-x86_64.AppImage
+
+# 运行地面站
+./QGroundControl-x86_64.AppImage</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>12.3 安装 Git 配置（可选，加速下载）</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 配置 Git 用户信息
+git config --global user.name "Your Name"
+git config --global user.email "your_email@example.com"
+
+# 配置 Git 缓存和压缩（提升大仓库下载速度）
+git config --global core.compression 0
+git config --global http.postBuffer 524288000
+
+# 为 GitHub 配置代理（如果有代理，替换为实际地址）
+# git config --global http.proxy http://127.0.0.1:7890
+# git config --global https.proxy http://127.0.0.1:7890</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 十三、共享剪贴板 -->
+            <div id="shared-clipboard" class="chapter">
+                <h1>十三、共享剪贴板设置</h1>
+
+                <div class="content-section">
+                    <h2>13.1 安装VMware Tools</h2>
+                    <p>启用宿主机和虚拟机之间的共享剪贴板功能：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 1. 更新软件包列表
+sudo apt update
+
+# 2. 安装open-vm-tools
+sudo apt install open-vm-tools open-vm-tools-desktop -y
+
+# 3. 重启虚拟机
+sudo reboot</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>13.2 启用共享剪贴板</h2>
+                    <p>重启后，在VMware中设置：</p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>1. 虚拟机 → 设置 → 选项
+2. 选择"客户机隔离"
+3. 勾选：
+   - 启用复制和粘贴
+   - 启用拖放
+4. 点击"确定"保存</pre>
+                    </div>
+                </div>
+
+                <div class="tip">
+                    <strong>提示：</strong>设置完成后，可以在宿主机和虚拟机之间自由复制粘贴文本和文件。
+                </div>
+            </div>
+
+            <!-- 十四、验证环境安装 -->
+            <div id="verification" class="chapter">
+                <h1>十四、环境验证</h1>
+
+                <div class="content-section">
+                    <h2>14.1 验证工具链</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 检查 ARM 交叉编译器版本
+arm-none-eabi-gcc --version
+# 预期输出类似：arm-none-eabi-gcc (15:13.2.rel1-2) 13.2.1 20231009
+
+# 检查 Python 版本
+python3 --version
+
+# 检查 Gazebo 版本
+gazebo --version
+
+# 检查 CMake 版本
+cmake --version</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>14.2 运行快速测试</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>cd ~/uav_workspace/PX4-Autopilot
+
+# 编译并运行一个简单测试
+make px4_sitl_default gazebo-classic</pre>
+                    </div>
+                    <div class="note">
+                        如果出现 <code>pxh&gt;</code> 提示符，说明环境配置成功。输入 <code>help</code> 可查看所有可用命令。
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>14.3 仿真成功截图</h2>
+                    <p>以下截图展示了Gazebo仿真环境成功运行的效果：</p>
+                    <img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/px4_gazebo_simulation.png" alt="PX4 Gazebo仿真成功截图" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div class="tip">
+                        <strong>成功标志：</strong>左侧终端显示PX4启动信息，右侧Gazebo窗口显示仿真场景和无人机模型，表示环境配置成功。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 九、常见问题 -->
+            <div id="troubleshooting" class="chapter">
+                <h1>十五、常见问题与解决方案</h1>
+
+                <div class="content-section">
+                    <h2>15.1 编译错误：子模块无法下载</h2>
+                    <p><strong>问题：</strong>GitHub 连接不稳定导致子模块下载失败。</p>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 使用 Gitee 镜像（已在指南中使用）
+git clone https://gitee.com/hxlanu/PX4-Autopilot.git --recursive
+
+# 如果仍然失败，尝试单独更新子模块
+git submodule sync --recursive
+git submodule update --init --recursive --depth=1</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>15.2 Gazebo-ROV 启动失败</h2>
+                    <p><strong>问题：</strong>ROV仿真启动时出现错误或模型加载失败。</p>
+                    <p><strong>可能原因及解决方案：</strong></p>
+                    <ul>
+                        <li><strong>缺少ROV模型：</strong>确保PX4版本支持ROV仿真</li>
+                    </ul>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 更新子模块，确保包含ROV模型
+git submodule update --init --recursive
+
+# 重新安装Gazebo相关包
+sudo apt install --reinstall gazebo libgazebo-dev
+
+# 清理并重新编译
+make clean
+make px4_sitl_default</pre>
+                    </div>
+                    <ul>
+                        <li><strong>水下环境参数错误：</strong>检查水的密度和粘度设置</li>
+                    </ul>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 检查水下环境参数
+param show SIM_WATER_DENSITY
+param show SIM_WATER_VISCO
+
+# 重新设置正确的参数
+param set SIM_WATER_DENSITY 1025
+param set SIM_WATER_VISCO 0.001</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>15.3 ROV控制响应异常</h2>
+                    <p><strong>问题：</strong>ROV仿真中控制命令无响应或响应异常。</p>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 检查ROV是否已解锁
+commander status
+
+# 检查推力器参数
+param show UUV_THRUST_SCALE
+
+# 调整推力器参数
+param set UUV_THRUST_SCALE 1.5
+param save
+
+# 重启仿真
+commander reboot</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>15.4 水下传感器数据异常</h2>
+                    <p><strong>问题：</strong>深度传感器、DVL等水下传感器数据不准确。</p>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 检查传感器参数
+param show SENS_DVL_EN
+param show SENS_DEPTH_EN
+
+# 启用传感器
+param set SENS_DVL_EN 1
+param set SENS_DEPTH_EN 1
+
+# 设置传感器噪声参数
+param set SENS_DEPTH_NSD 0.01
+param set SENS_DVL_NSD 0.05
+param save</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>15.5 Python 依赖冲突</h2>
+                    <p><strong>问题：</strong>pip 安装时提示 externally-managed-environment 错误。</p>
+                    <p><strong>解决方案：</strong></p>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre># 使用 --break-system-packages 标志（已在指南中使用）
+pip3 install --break-system-packages &lt;package-name&gt;
+
+# 或创建虚拟环境（推荐）
+python3 -m venv ~/px4_venv
+source ~/px4_venv/bin/activate
+pip install empy numpy toml jinja2 pyyaml</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>15.6 VMware 虚拟机性能优化</h2>
+                    <p>为了让仿真运行更流畅：</p>
+                    <ul>
+                        <li>启用 3D 加速：虚拟机设置 → 显示器 → 勾选"加速 3D 图形"</li>
+                        <li>分配更多内存：建议 8GB 以上</li>
+                        <li>分配更多 CPU 核心：建议 4 核心</li>
+                        <li>安装 VMware Tools：</li>
+                    </ul>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>sudo apt install -y open-vm-tools open-vm-tools-desktop</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 十、快速参考 -->
+            <div id="quick-reference" class="chapter">
+                <h1>十六、快速参考卡片</h1>
+
+                <div class="content-section">
+                    <h2>ROV常用命令速查</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>操作                          命令
+进入工作目录                cd ~/uav_workspace/PX4-Autopilot
+BlueROV2仿真               make px4_sitl gazebo-classic_uuv_hippocampus
+Hippocampus ROV仿真         make px4_sitl gazebo-classic_uuv_hippocampus
+Helica UUV仿真              make px4_sitl gazebo-classic_uuv_helica
+编译PX4-ROV固件             make px4_sitl_default
+清理编译文件               make clean
+更新代码                   git pull --recurse-submodules
+启动QGroundControl          ~/uav_workspace/tools/QGroundControl-x86_64.AppImage
+ROV解锁                    commander arm
+ROV锁定                    commander disarm
+下潜到默认深度             commander takeoff
+上浮到水面                 commander land
+前进2米                   commander forward 2
+保存参数                   param save</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>项目结构说明</h2>
+                    <div class="code-block">
+                        <button class="copy-btn">复制</button>
+                        <pre>~/uav_workspace/
+├── PX4-Autopilot/          # PX4 固件主目录
+│   ├── build/              # 编译输出目录
+│   │   └── px4_sitl_default/  # SITL 仿真编译结果
+│   │       └── bin/px4      # 可执行文件
+│   ├── src/                # 源代码
+│   ├── launch/             # 启动文件
+│   ├── Tools/              # 开发工具脚本
+│   └── ROMFS/              # 文件系统
+└── tools/                  # 开发工具
+    └── QGroundControl-x86_64.AppImage</pre>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>学习资源</h2>
+                    <ul>
+                        <li>PX4 官方文档：<a href="https://docs.px4.io/" target="_blank">https://docs.px4.io/</a></li>
+                        <li>QGroundControl 用户指南：<a href="https://docs.qgroundcontrol.com/" target="_blank">https://docs.qgroundcontrol.com/</a></li>
+                        <li>Gazebo 仿真教程：<a href="https://classic.gazebosim.org/tutorials" target="_blank">https://classic.gazebosim.org/tutorials</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 导航功能
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // 移除所有active类
+                document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+                document.querySelectorAll('.chapter').forEach(chapter => chapter.classList.remove('active'));
+
+                // 添加active类到当前点击的链接
+                this.classList.add('active');
+
+                // 显示对应的章节
+                const chapterId = this.getAttribute('data-chapter');
+                document.getElementById(chapterId).classList.add('active');
+            });
+        });
+
+        // 复制功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.parentElement.querySelector('pre');
+                const text = codeBlock.textContent;
+
+                navigator.clipboard.writeText(text).then(() => {
+                    // 显示复制成功状态
+                    const originalText = this.textContent;
+                    this.textContent = '已复制!';
+                    this.classList.add('copy-success');
+
+                    // 2秒后恢复
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.classList.remove('copy-success');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    this.textContent = '复制失败';
+                    setTimeout(() => {
+                        this.textContent = '复制';
+                    }, 2000);
+                });
+            });
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

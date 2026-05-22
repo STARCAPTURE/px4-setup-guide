@@ -316,16 +316,37 @@
 
                     <h3>3.2 主控仓元器件</h3>
                     <ol>
-                        <li><strong>树莓派：</strong>使用价格低廉的树莓派3B，用来控制Pixhawk，连接摄像头并传回图像信息。</li>
+                        <li>
+                            <strong>树莓派：</strong>使用价格低廉的树莓派3B，用来控制Pixhawk，连接摄像头并传回图像信息。
+                            <br><img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/raspberry_pi_3b.png" alt="树莓派3B" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 10px 0;">
+                        </li>
                         <li><strong>电源：</strong>为树莓派3B和Pixhawk供电。</li>
                         <li><strong>相机云台：</strong>用来控制相机上下运动，切换视角。</li>
                         <li><strong>相机：</strong>感知外界环境，传回图像信息。</li>
-                        <li><strong>防水灯：</strong>照亮漆黑的海底（水底）环境，方便下水作业。</li>
-                        <li><strong>电调：</strong>电调有"电流控制"作用，电调内部电路有一套MOSFET管（"功率管"）。电流输入电调，内部电路接收来自接收机的信号，根据信号，把电流作出合适的"控制"，然后把"控制"后的电流输出到马达，从而控制电机的启停及转速。</li>
-                        <li><strong>螺旋桨：</strong>推动ROV完成一系列运动，可以正转和反转，取决于输入的PWM控制信号。</li>
-                        <li><strong>功率计：</strong>及时检测电压电流等供电情况。</li>
-                        <li><strong>压强计：</strong>及时检测ROV所处的位置的水压，从而计算出当时的深度，使ROV能稳定在某一深度下。</li>
-                        <li><strong>Pixhawk：</strong>具有8个主输出通道和6个辅助输出通道，另外还有一个SB和一个RC输入通道。能够加载任何ArduPilot二进制固件文件（直升机、飞机、漫游者/船、潜艇），包含用于连接多个外设的输入和输出连接，包含嵌入式IMU、磁罗盘和陀螺仪，用于确定车辆的方向，能够保存车辆日志。</li>
+                        <li>
+                            <strong>防水灯：</strong>照亮漆黑的海底（水底）环境，方便下水作业。
+                            <br><img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/underwater_light.png" alt="防水灯" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 10px 0;">
+                        </li>
+                        <li>
+                            <strong>电调：</strong>电调有"电流控制"作用，电调内部电路有一套MOSFET管（"功率管"）。电流输入电调，内部电路接收来自接收机的信号，根据信号，把电流作出合适的"控制"，然后把"控制"后的电流输出到马达，从而控制电机的启停及转速。
+                            <br><img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/esc_module.png" alt="电调" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 10px 0;">
+                        </li>
+                        <li>
+                            <strong>螺旋桨：</strong>推动ROV完成一系列运动，可以正转和反转，取决于输入的PWM控制信号。
+                            <br><img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/propeller.png" alt="螺旋桨" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 10px 0;">
+                        </li>
+                        <li>
+                            <strong>功率计：</strong>及时检测电压电流等供电情况。
+                            <br><img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/power_module.png" alt="功率计" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 10px 0;">
+                        </li>
+                        <li>
+                            <strong>压强计：</strong>及时检测ROV所处的位置的水压，从而计算出当时的深度，使ROV能稳定在某一深度下。
+                            <br><img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/pressure_sensor.png" alt="压强计" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 10px 0;">
+                        </li>
+                        <li>
+                            <strong>Pixhawk：</strong>具有8个主输出通道和6个辅助输出通道，另外还有一个SB和一个RC输入通道。能够加载任何ArduPilot二进制固件文件（直升机、飞机、漫游者/船、潜艇），包含用于连接多个外设的输入和输出连接，包含嵌入式IMU、磁罗盘和陀螺仪，用于确定车辆的方向，能够保存车辆日志。
+                            <br><img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/pixhawk_flight_controller.png" alt="Pixhawk飞控" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 10px 0;">
+                        </li>
                     </ol>
                 </div>
 

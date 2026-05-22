@@ -245,7 +245,8 @@
         <div class="sidebar">
             <h2>PX4-ROV开发环境配置完整指南 v2.0</h2>
             <ul class="nav-menu">
-                <li><a href="#" data-chapter="preparation" class="active">一、准备工作</a></li>
+                <li><a href="#" data-chapter="rov-intro" class="active">零、ROV简介</a></li>
+                <li><a href="#" data-chapter="preparation">一、准备工作</a></li>
                 <li><a href="#" data-chapter="vmware-install">二、VMware安装</a></li>
                 <li><a href="#" data-chapter="ubuntu-download">三、Ubuntu下载</a></li>
                 <li><a href="#" data-chapter="vm-setup">四、虚拟机创建</a></li>
@@ -266,8 +267,80 @@
 
         <!-- 主内容区 -->
         <div class="main-content">
+            <!-- 零、ROV简介 -->
+            <div id="rov-intro" class="chapter active">
+                <h1>零、ROV简介</h1>
+
+                <div class="content-section">
+                    <h2>1. BlueROV概述</h2>
+
+                    <h3>1.1 什么是ROV</h3>
+                    <p><strong>维基百科定义：</strong>遥控潜水器（Remotely operated underwater vehicle，缩写ROV）是一个无人的水下航行器，以电缆连接到母船的人员操作。常搭载水下光源和照相机、摄影机、机械手臂、声纳等。因为具有机械手臂，所以又称为水下机器人。</p>
+                    <p><strong>百度百科定义：</strong>ROV，即遥控无人潜水器，是用于水下观察、检查和施工的水下机器人。</p>
+
+                    <h3>1.2 什么是BlueROV</h3>
+                    <p>BlueROV是由国外一家公司开发的ROV产品，是目前水下机器人领域应用广泛的开源解决方案之一，基于ArduSub固件运行，配合Pixhawk飞控和QGroundControl地面站软件，可实现稳定的水下作业控制。</p>
+                </div>
+
+                <div class="content-section">
+                    <h2>2. BlueROV结构介绍（以中型为例）</h2>
+
+                    <h3>2.1 几个视图</h3>
+                    <p>下面给出BlueROV的几个视图：</p>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 15px 0;">
+                        <img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/bluerov_structure_front.png" alt="BlueROV正视图" style="max-width: 48%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                        <img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/bluerov_structure_side.png" alt="BlueROV侧视图" style="max-width: 48%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    </div>
+
+                    <h3>2.2 机械结构</h3>
+                    <p>如图，BlueROV机械结构主要分为<strong>机架、电池仓、主控仓</strong>和<strong>其他功能模块</strong>四部分，接下来会对这几部分进行逐一介绍。</p>
+
+                    <h4>2.2.1 机架</h4>
+                    <p>BlueROV除去电池仓、主控仓和其他比如螺旋桨和灯等功能模块以外都是机架。机架主要起固定电池仓、主控仓和其他功能模块的作用。另外机架上面还可以固定后加的铅块、浮力块等物品用来调节使机体平衡。</p>
+                    <p>机架上部固定有浮力较大的浮体，为机体提供充足的浮力，保证机体在自然状态下或者电源耗尽的状态下能够自然浮出水面。另外机架上面还预留了很多小孔，为开发者预留了很多接口，方便后续安装机械爪、声纳等拓展件。</p>
+
+                    <h4>2.2.2 电池仓</h4>
+                    <p>BlueROV机架上共固定有两个仓，其中下面的仓为电池仓。里面放置了一块18.0Ah的锂电池，从电池仓里面引出来一条线为控制仓供电。</p>
+
+                    <h4>2.2.3 主控仓</h4>
+                    <p>BlueROV机架上方固定的仓是主控仓。里面主要放置电源、电调、树莓派、Pixhawk、摄像头、载波模块等元器件，从控制仓里引出电源线和信号线用来为螺旋桨和灯提供能源和信号。</p>
+                </div>
+
+                <div class="content-section">
+                    <h2>3. 电气部件</h2>
+
+                    <h3>3.1 连线</h3>
+                    <p>其中控制仓的接线图如下图所示：</p>
+                    <img src="https://starcaptor.oss-cn-guangzhou.aliyuncs.com/bluerov_wiring.png" alt="BlueROV接线图" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 15px 0;">
+                    <p>电脑通过载波模块与树莓派相连；树莓派上通过USB-MicroUSB线与Pixhawk相连，另外树莓派上还连接有5V6A电源为树莓派供电，一个摄像头负责获取图像；Pixhawk上连接有相机云台、防水灯、电调-螺旋桨、5V6A电源、功率计、压强计。</p>
+
+                    <h3>3.2 主控仓元器件</h3>
+                    <ol>
+                        <li><strong>树莓派：</strong>使用价格低廉的树莓派3B，用来控制Pixhawk，连接摄像头并传回图像信息。</li>
+                        <li><strong>电源：</strong>为树莓派3B和Pixhawk供电。</li>
+                        <li><strong>相机云台：</strong>用来控制相机上下运动，切换视角。</li>
+                        <li><strong>相机：</strong>感知外界环境，传回图像信息。</li>
+                        <li><strong>防水灯：</strong>照亮漆黑的海底（水底）环境，方便下水作业。</li>
+                        <li><strong>电调：</strong>电调有"电流控制"作用，电调内部电路有一套MOSFET管（"功率管"）。电流输入电调，内部电路接收来自接收机的信号，根据信号，把电流作出合适的"控制"，然后把"控制"后的电流输出到马达，从而控制电机的启停及转速。</li>
+                        <li><strong>螺旋桨：</strong>推动ROV完成一系列运动，可以正转和反转，取决于输入的PWM控制信号。</li>
+                        <li><strong>功率计：</strong>及时检测电压电流等供电情况。</li>
+                        <li><strong>压强计：</strong>及时检测ROV所处的位置的水压，从而计算出当时的深度，使ROV能稳定在某一深度下。</li>
+                        <li><strong>Pixhawk：</strong>具有8个主输出通道和6个辅助输出通道，另外还有一个SB和一个RC输入通道。能够加载任何ArduPilot二进制固件文件（直升机、飞机、漫游者/船、潜艇），包含用于连接多个外设的输入和输出连接，包含嵌入式IMU、磁罗盘和陀螺仪，用于确定车辆的方向，能够保存车辆日志。</li>
+                    </ol>
+                </div>
+
+                <div class="content-section">
+                    <h2>4. 软件控制</h2>
+
+                    <h3>4.1 手柄控制</h3>
+                    <p>手柄控制需要搭配相应的控制软件<strong>QGroundControl</strong>（简称QGC），支持Windows、Ubuntu Linux等多种平台。Ubuntu安装QGC与Windows略有不同。</p>
+                    <p>软件安装以后需要手动配置以太网IP（192.168.2.1）才能实现连接，正常连接时左上角会出现"Ready To Fly"字样。其中部分电脑机型能正常连接但是不出现视频画面属正常情况，目前尚未找到解决方法。</p>
+                    <p>软件安装好以后需要QGC连接ROV和手柄，打开"Vehicle Setup View"中的"Joystick"勾选"Enable joystick input"后，手柄此方能正常使用。</p>
+                </div>
+            </div>
+
             <!-- 一、准备工作 -->
-            <div id="preparation" class="chapter active">
+            <div id="preparation" class="chapter">
                 <h1>一、准备工作清单</h1>
 
                 <div class="tip">
